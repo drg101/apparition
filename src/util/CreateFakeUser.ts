@@ -1,13 +1,14 @@
 import Fakerator from "fakerator";
 import { generate } from 'generate-password';
+import { email_provider_to_extension_interface, email_provider_type, gender_type } from "./types";
 
 const fakerator = Fakerator();
 
-const email_provider_to_extension = {
+const email_provider_to_extension: email_provider_to_extension_interface = {
     outlook: "outlook.com"
 }
 
-const create_fake_user = (gender='M', email_provider='outlook') => {
+const create_fake_user = (gender:gender_type='M', email_provider:email_provider_type='outlook') => {
     const fake_user_base = fakerator.entity.user(gender);
     const birth_date = new Date(fake_user_base.dob);
     const username = `${fake_user_base.firstName}${fake_user_base.lastName}${Math.floor(Math.random() * 999999)}`.toLowerCase().replace(/[^a-zA-Z0-9]/g, '');

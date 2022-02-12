@@ -10,10 +10,10 @@ initializeApp({
 
 const db = getFirestore();
 
-export const add_to_firestore = async (collection, data) => {
+export const add_to_firestore = async (collection: string, data: any) => {
     await db.collection(collection).add(data)
 }
 
-export const get_from_firestore = async (collection, query) => {
+export const get_from_firestore = async (collection: string, query: string[]) => {
 
 }

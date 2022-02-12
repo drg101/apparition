@@ -1,6 +1,7 @@
+import { Page } from "puppeteer";
 import randomNormal from "random-normal";
 
-const keyboard = async (text_to_enter, page, wpm = 105) => {
+const keyboard = async (text_to_enter: string, page: Page, wpm = 105) => {
     const timeoutTime = 60000 / wpm / 5;
     for (const character of text_to_enter){
         page.keyboard.type(character)

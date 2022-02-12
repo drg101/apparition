@@ -8,7 +8,7 @@ const color_names = {
     black: "#000000"
 }
 
-const color_to_name = (color) => {
+const color_to_name = (color: string) => {
     const colorToFind = chroma(color);
     const distances = Object.entries(color_names).map(([name, hex]) => {
         return {

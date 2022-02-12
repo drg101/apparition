@@ -1,6 +1,6 @@
 import tesseract from "node-tesseract-ocr"
 let count = 0
-const get_image_text = async (img) => {
+const get_image_text = async (img: Buffer) => {
     try {
         const ocr = await tesseract.recognize(img, {
             oem: 1,

@@ -1,5 +1,8 @@
 import Fuse from 'fuse.js';
+import { GhostCursor } from 'ghost-cursor';
 import Jimp from "jimp";
+import { Page } from 'puppeteer';
+import { element_info_interface, offset_interface } from './types.js';
 
 import color_to_name from './ColorToName.js'
 import get_area_image from './GetAreaImage.js'
@@ -8,27 +11,29 @@ import get_image_text from './GetImageText.js'
 
 let count = 0;
 
-const locate = async (descriptor, page, cursor) => {
+const locate = async (descriptor: string, page: Page, cursor: GhostCursor) => {
 
     // const aHandle = await page.evaluateHandle('document'); // Handle for the 'document'
     const elements = await page.evaluate(async () => {
-        function isVisible(elem, additional_offset={top: 0, left: 0}) {
+        function isVisible(elem: HTMLElement, additional_offset: offset_interface={top: 0, left: 0}) {
             console.log({elem})
             const style = getComputedStyle(elem);
 
             // if (!(elem instanceof Element)) return false;
             if (style.display === 'none') return false;
             if (style.visibility !== 'visible') return false;
+            // @ts-ignore
             if (style.opacity < 0.1) return false;
             if (elem.offsetWidth + elem.offsetHeight + elem.getBoundingClientRect().height +
                 elem.getBoundingClientRect().width === 0) {
                 return false;
             }
             let elemCenter;
-            console.log({ elem })
             try {
                 elemCenter = {
+                    // @ts-ignore
                     x: elem.getBoundingClientRect().left + (elem.offsetWidth ?? elem.getBBox().width) / 2 + additional_offset.left,
+                    // @ts-ignore
                     y: elem.getBoundingClientRect().top + (elem.offsetHeight ?? elem.getBBox().height) / 2 + additional_offset.top
                 };
             }
@@ -44,17 +49,18 @@ const locate = async (descriptor, page, cursor) => {
             while (pointContainer?.tagName === "IFRAME" && elem.tagName !== "IFRAME"){
                 elemCenter.y -= pointContainer.getBoundingClientRect().top
                 elemCenter.x -= pointContainer.getBoundingClientRect().left
+                // @ts-ignore
                 pointContainer = pointContainer.contentDocument.elementFromPoint(elemCenter.x, elemCenter.y);
             }
             do {
                 if (!pointContainer) break;
                 if (pointContainer === elem) return true;
+                // @ts-ignore
             } while (pointContainer = pointContainer?.parentNode);
             return false;
         }
 
-        const offset = (el) => {
-            console.log({el})
+        const offset = (el: Element) => {
             const rect = el.getBoundingClientRect(),
                 scrollLeft = window.pageXOffset || document.documentElement.scrollLeft,
                 scrollTop = window.pageYOffset || document.documentElement.scrollTop;
@@ -120,7 +126,7 @@ const locate = async (descriptor, page, cursor) => {
     });
 
     const page_screenshot_buffer = await page.screenshot();
-    const screenshot_jimp = await Jimp.read(page_screenshot_buffer)
+    const screenshot_jimp = await Jimp.read(page_screenshot_buffer as Buffer)
     const elements_bg_color_encoded = await Promise.all(elements.map(async e => {
         let color_hex;
         let ocr_text;
@@ -151,7 +157,7 @@ const locate = async (descriptor, page, cursor) => {
     });
 
     const res = fuse.search(descriptor);
-    const element_to_click_on = res[0].item
+    const element_to_click_on: element_info_interface = res[0].item
     element_to_click_on.score = res[0].score
     console.log(element_to_click_on)
     console.log(descriptor)
