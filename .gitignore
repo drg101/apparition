@@ -2,3 +2,4 @@ node_modules/
 src/util/temp/*
 keys/
 temp/
+build/

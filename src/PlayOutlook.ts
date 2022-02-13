@@ -83,7 +83,7 @@ const fakerator = Fakerator();
     await page.waitForTimeout(10000)
     // await click_on("blue next", page, cursor)
     // await click_on("blue next", page, cursor)
-    await prompt.get('done w/ captcha?');
+    await prompt.get(['done w/ captcha?']);
     await click_on("no", page, cursor)
 
     console.log(fake_user)

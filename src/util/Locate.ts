@@ -78,47 +78,66 @@ const locate = async (descriptor: string, page: Page, cursor: GhostCursor) => {
 
         let all_elements_and_offsets = base_elements_and_offsets;
 
+
+        //fuck
         while (iframes_and_offsets.length) {
             const iframe_and_offset = iframes_and_offsets.shift()
+            // @ts-ignore
             const additonal_offset = offset(iframe_and_offset.element)
+            // @ts-ignore
             if (!iframe_and_offset.element.contentDocument){
                 continue;
             }
+            // @ts-ignore
             const additional_elements = Array.from(iframe_and_offset.element.contentDocument.body.getElementsByTagName("*")).map(element => {
                 return {
                     element,
                     offset: {
+                        // @ts-ignore
                         top: iframe_and_offset.offset.top + additonal_offset.top,
+                        // @ts-ignore
                         left: iframe_and_offset.offset.left + additonal_offset.left
                     }
                 }
             });
+            // @ts-ignore
             const additional_iframes = additional_elements.filter(o => o.element.tagName === "IFRAME");
+            // @ts-ignore
             iframes_and_offsets = [...iframes_and_offsets, ...additional_iframes]
+            // @ts-ignore
             all_elements_and_offsets = [...all_elements_and_offsets, ...additional_elements]
         }
 
 
         const elements_text = all_elements_and_offsets.filter(element_and_offset => {
+            // @ts-ignore
             return isVisible(element_and_offset.element, element_and_offset.offset)
         }).map(element_and_offset => {
-            e = element_and_offset.element
+            let e = element_and_offset.element
             const outer_offset = element_and_offset.offset;
             const inner_offset = offset(element_and_offset.element)
             return {
+                // @ts-ignore
                 innerText: e.innerText,
                 offset: {
                     top: inner_offset.top + outer_offset.top,
                     left: inner_offset.left + outer_offset.left
                 },
+                // @ts-ignore
                 width: e.offsetWidth,
+                // @ts-ignore
                 height: e.offsetHeight,
                 id: e.id ?? '',
+                // @ts-ignore
                 title: e.title ?? '',
                 className: e.className ?? '',
+                // @ts-ignore
                 name: e.name ?? '',
+                // @ts-ignore
                 placeholder: e.placeholder ?? '',
+                // @ts-ignore
                 value: e.value ?? '',
+                // @ts-ignore
                 label: e.label ?? ''
             }
         });
